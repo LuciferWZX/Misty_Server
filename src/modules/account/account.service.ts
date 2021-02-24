@@ -15,6 +15,10 @@ export class AccountService{
         const createdAccount = new this.accountModel(createAccountDto);
         return createdAccount.save()
     }
+    //更具用户名查询
+    async findOneByAccountName(accountName:string):Promise<Account>{
+        return this.accountModel.findOne({accountName:accountName})
+    }
     //查询所有的账户
     async findAll():Promise<Account[]>{
 

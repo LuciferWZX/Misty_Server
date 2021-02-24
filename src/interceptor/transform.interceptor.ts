@@ -20,7 +20,7 @@ export class TransformInterceptor<T>
                 return {
                     data,
                     code: 0,
-                    message: '请求成功',
+                    message: 'ok',
                 };
             }),
         );
