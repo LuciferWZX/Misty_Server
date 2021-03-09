@@ -1,10 +1,10 @@
-import {MongooseModuleOptions} from "@nestjs/mongoose";
+import { MongooseModuleOptions } from '@nestjs/mongoose';
 
-interface MongodbConfig{
-    url:string,
-    options?:MongooseModuleOptions
+interface MongodbConfig {
+  url: string;
+  options?: MongooseModuleOptions;
 }
-const mongodbConfig:MongodbConfig={
-    url:'mongodb://localhost/db_misty',
-}
-export default mongodbConfig
+const mongodbConfig: MongodbConfig = {
+  url: 'mongodb://localhost:27017/db_misty',
+};
+export default mongodbConfig;

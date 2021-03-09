@@ -3,17 +3,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './common/logger.middleware';
 import { UsersModule } from './modules/user/users.module';
-import {MongooseModule} from "@nestjs/mongoose";
-import mongodbConfig from './config/mongodb.config'
-import {AccountModule} from "./modules/account/account.module";
-import {CacheModule} from "./cache/cache.module";
+import { MongooseModule } from '@nestjs/mongoose';
+import { AccountModule } from './modules/account/account.module';
+import { CacheModule } from './cache/cache.module';
+import mongodbConfig from './config/mongodb.config';
+
 @Module({
   imports: [
-      AccountModule,
-      UsersModule,
-      CacheModule,
-      //mongodb的模块
-      MongooseModule.forRoot(mongodbConfig.url)
+    AccountModule,
+    UsersModule,
+    CacheModule,
+    //mongodb的模块
+    MongooseModule.forRoot(mongodbConfig.url, mongodbConfig.options),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,7 +1,7 @@
-export class CreateAccountDto{
-    accountUsername:string;
-    accountName:string;
-    accountPassword:string;
-    email?:string;
-    phone?:string
+export class CreateAccountDto {
+  accountUsername: string;
+  accountNickname: string;
+  accountPassword: string;
+  email: string;
+  phone: string;
 }
