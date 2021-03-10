@@ -13,11 +13,14 @@ import { Account } from '../../schemas/account.schema';
 import { ExceptionStatus } from '../../common/common.interface';
 //import { CacheService } from '../../cache/cache.service';
 import { enCrypt, enCryptCompare } from '../../utils/help';
+import { AuthorityService } from '../authority/authority.service';
+import { AccountEntity } from './entity/account-entity';
 
 @Controller('account')
 export class AccountController {
   constructor(
     private readonly accountService: AccountService, //private readonly cacheService: CacheService,
+    private readonly authorityService: AuthorityService,
   ) {}
 
   /**
@@ -52,8 +55,9 @@ export class AccountController {
    * @param loginAccountDto
    */
   @Post('login')
-  async logo(@Body() loginAccountDto: LoginAccountDto): Promise<Account> {
+  async logo(@Body() loginAccountDto: LoginAccountDto): Promise<AccountEntity> {
     const { accountPassword, accountUsername } = loginAccountDto;
+    //查询用户
     const account: Account | null = await this.accountService.findOneByAccountUsername(
       accountUsername,
       true,
@@ -77,7 +81,28 @@ export class AccountController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    return account;
+    //查询用户的权限详情
+    const authority = await this.authorityService.findAuthorityByLevel(
+      account.authorityLevel,
+    );
+    if (!authority) {
+      throw new HttpException(
+        {
+          code: ExceptionStatus.NOT_FIND,
+          message: '该用户权限异常',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    return {
+      ...account,
+      authority: {
+        id: authority.id,
+        name: authority.authorityName,
+        description: authority.authorityDescription,
+        level: authority.authorityLevel,
+      },
+    };
   }
   //查询所有账户
   @Get('findAll')

@@ -6,5 +6,8 @@ interface MongodbConfig {
 }
 const mongodbConfig: MongodbConfig = {
   url: 'mongodb://localhost:27017/db_misty',
+  options: {
+    useCreateIndex: true,
+  },
 };
 export default mongodbConfig;

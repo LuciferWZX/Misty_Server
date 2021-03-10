@@ -7,14 +7,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AccountModule } from './modules/account/account.module';
 import { CacheModule } from './cache/cache.module';
 import mongodbConfig from './config/mongodb.config';
+import { AuthorityModule } from './modules/authority/authority.module';
 
 @Module({
   imports: [
-    AccountModule,
-    UsersModule,
-    CacheModule,
     //mongodb的模块
     MongooseModule.forRoot(mongodbConfig.url, mongodbConfig.options),
+    CacheModule,
+    AuthorityModule,
+    AccountModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

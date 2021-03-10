@@ -4,10 +4,12 @@ import { AccountController } from './account.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Account, AccountSchema } from '../../schemas/account.schema';
 import { CacheService } from '../../cache/cache.service';
+import { AuthorityModule } from '../authority/authority.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Account.name, schema: AccountSchema }]),
+    AuthorityModule,
   ],
   controllers: [AccountController],
   providers: [AccountService, CacheService],
