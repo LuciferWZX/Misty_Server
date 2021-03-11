@@ -8,6 +8,9 @@ import { AccountModule } from './modules/account/account.module';
 import { CacheModule } from './cache/cache.module';
 import mongodbConfig from './config/mongodb.config';
 import { AuthorityModule } from './modules/authority/authority.module';
+import { CacheService } from './cache/cache.service';
+import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,16 +19,20 @@ import { AuthorityModule } from './modules/authority/authority.module';
     CacheModule,
     AuthorityModule,
     AccountModule,
+    AuthModule,
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CacheService, AuthService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .exclude({ path: '/', method: RequestMethod.GET })
-      .forRoutes('user');
+      .exclude(
+        { path: 'account/login', method: RequestMethod.POST },
+        { path: 'account/create', method: RequestMethod.POST },
+      ) //排除要验证token的路由
+      .forRoutes('account');
   }
 }

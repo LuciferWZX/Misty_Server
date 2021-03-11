@@ -11,4 +11,6 @@ export enum ExceptionStatus {
   CREATE_FAILED = 20000, //注册失败
   NOT_FIND = 20001, //未找到用户
   PASSWORD_ERROR = 20002, //未找到用户
+  NO_TOKEN = 20003, //没有token
+  TOKEN_EXPIRED = 20004,
 }

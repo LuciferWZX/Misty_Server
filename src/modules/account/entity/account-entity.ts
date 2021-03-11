@@ -9,6 +9,7 @@ export class AccountEntity extends Account {
   email: string;
   phone: string;
   authorityLevel: AccountAuthority;
+  token: string;
   authority: {
     id: string;
     name: string;

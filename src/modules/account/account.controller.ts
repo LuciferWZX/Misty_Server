@@ -11,16 +11,20 @@ import { LoginAccountDto } from './dto/login-account.dto';
 import { AccountService } from './account.service';
 import { Account } from '../../schemas/account.schema';
 import { ExceptionStatus } from '../../common/common.interface';
-//import { CacheService } from '../../cache/cache.service';
+import { CacheService } from '../../cache/cache.service';
 import { enCrypt, enCryptCompare } from '../../utils/help';
 import { AuthorityService } from '../authority/authority.service';
 import { AccountEntity } from './entity/account-entity';
+import { AuthService } from '../../auth/auth.service';
+import { RedisKey } from '../../config/redis.config';
 
 @Controller('account')
 export class AccountController {
   constructor(
     private readonly accountService: AccountService, //private readonly cacheService: CacheService,
-    private readonly authorityService: AuthorityService,
+    private readonly authorityService: AuthorityService, //private readonly authService: AuthService,
+    private readonly authService: AuthService,
+    private readonly cacheService: CacheService,
   ) {}
 
   /**
@@ -54,11 +58,12 @@ export class AccountController {
    * 登录
    * @param loginAccountDto
    */
+
   @Post('login')
   async logo(@Body() loginAccountDto: LoginAccountDto): Promise<AccountEntity> {
     const { accountPassword, accountUsername } = loginAccountDto;
     //查询用户
-    const account: Account | null = await this.accountService.findOneByAccountUsername(
+    const account = await this.accountService.findOneByAccountUsername(
       accountUsername,
       true,
     );
@@ -94,17 +99,27 @@ export class AccountController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    return {
-      ...account,
+    const loginUser: AccountEntity = {
+      id: account.id,
+      authorityLevel: account.authorityLevel,
+      email: account.email,
+      phone: account.phone,
+      accountUsername: account.accountUsername,
+      accountNickname: account.accountNickname,
+      accountPassword: account.accountPassword,
       authority: {
         id: authority.id,
         name: authority.authorityName,
         description: authority.authorityDescription,
         level: authority.authorityLevel,
       },
+      token: await this.authService.genAccountToken(account),
     };
+    await this.cacheService.hSet(RedisKey.accounts, loginUser.token, loginUser);
+    return loginUser;
   }
   //查询所有账户
+
   @Get('findAll')
   async getAll(): Promise<Account[]> {
     return await this.accountService.findAll();
