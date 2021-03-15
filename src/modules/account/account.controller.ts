@@ -1,17 +1,26 @@
-import {Body, Controller, Get, HttpException, HttpStatus, Post, Request} from '@nestjs/common';
-import {CreateAccountDto} from './dto/create-account.dto';
-import {LoginAccountDto} from './dto/login-account.dto';
-import {AccountService} from './account.service';
-import {Account} from '../../schemas/account.schema';
-import {ExceptionStatus} from '../../common/common.interface';
-import {CacheService} from '../../cache/cache.service';
-import {enCrypt, enCryptCompare} from '../../utils/help';
-import {AuthorityService} from '../authority/authority.service';
-import {AccountEntity} from './entity/account-entity';
-import {AuthService} from '../../auth/auth.service';
-import {RedisKey} from '../../config/redis.config';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Request,
+} from '@nestjs/common';
+import { CreateAccountDto } from './dto/create-account.dto';
+import { LoginAccountDto } from './dto/login-account.dto';
+import { AccountService } from './account.service';
+import { Account } from '../../schemas/account.schema';
+import { ExceptionStatus } from '../../common/common.interface';
+import { CacheService } from '../../cache/cache.service';
+import { enCrypt, enCryptCompare } from '../../utils/help';
+import { AuthorityService } from '../authority/authority.service';
+import { AccountEntity } from './entity/account-entity';
+import { AuthService } from '../../auth/auth.service';
+import { RedisKey } from '../../config/redis.config';
+import { AccountControllerPath, Route } from '../../utils/route';
 
-@Controller('account')
+@Controller(Route.account)
 export class AccountController {
   constructor(
     private readonly accountService: AccountService, //private readonly cacheService: CacheService,
@@ -25,7 +34,7 @@ export class AccountController {
    * 新增账户
    * @param createAccountDto
    */
-  @Post('create')
+  @Post(AccountControllerPath.create)
   async create(@Body() createAccountDto: CreateAccountDto): Promise<Account> {
     const {
       accountNickname,
@@ -52,7 +61,7 @@ export class AccountController {
    * @param loginAccountDto
    */
 
-  @Post('login')
+  @Post(AccountControllerPath.login)
   async logo(@Body() loginAccountDto: LoginAccountDto): Promise<AccountEntity> {
     const { accountPassword, accountUsername } = loginAccountDto;
     //查询用户
@@ -92,6 +101,7 @@ export class AccountController {
         HttpStatus.UNAUTHORIZED,
       );
     }
+    const token = await this.authService.genAccountToken(account);
     const loginUser: AccountEntity = {
       id: account.id,
       authorityLevel: account.authorityLevel,
@@ -106,30 +116,30 @@ export class AccountController {
         description: authority.authorityDescription,
         level: authority.authorityLevel,
       },
-      token: await this.authService.genAccountToken(account),
+      token: token,
     };
-    await this.cacheService.hSet(RedisKey.accounts, loginUser.token, loginUser);
+    await updateToken(this.cacheService, loginUser);
     return loginUser;
   }
 
-  @Get('fetch_account_info')
-  async fetchAccountInfo(@Request() request):Promise<AccountEntity>{
-    console.log(request.headers.token)
-    const token=request.headers.token
-    if(token){
-      return await this.cacheService.hGet(RedisKey.accounts, token)
-    }else{
+  @Get(AccountControllerPath.fetch_account_info)
+  async fetchAccountInfo(@Request() request): Promise<AccountEntity> {
+    console.log(request.headers.token);
+    const token = request.headers.token;
+    if (token) {
+      return await this.cacheService.hGet(RedisKey.accounts, token);
+    } else {
       throw new HttpException(
-          {
-            code: ExceptionStatus.NOT_FIND,
-            message: '该用户不存在',
-          },
-          HttpStatus.UNAUTHORIZED,
+        {
+          code: ExceptionStatus.NOT_FIND,
+          message: '该用户不存在',
+        },
+        HttpStatus.UNAUTHORIZED,
       );
     }
   }
   //查询所有账户
-  @Get('findAll')
+  @Get(AccountControllerPath.find_all)
   async getAll(): Promise<Account[]> {
     return await this.accountService.findAll();
   }
@@ -171,4 +181,25 @@ async function checkRegisterParams(
       HttpStatus.UNAUTHORIZED,
     );
   }
+}
+
+/**
+ * todo
+ * 用来先检查redis是否存在之前的token，存在就删除不存在直接添加
+ * @param cacheService
+ * @param loginAccount
+ */
+async function updateToken(
+  cacheService: CacheService,
+  loginAccount: AccountEntity,
+) {
+  const data = await cacheService.hValues(RedisKey.accounts);
+  for (let i = 0; i < data.length; i++) {
+    const account = JSON.parse(data[i]) as AccountEntity;
+    if (account.id === loginAccount.id) {
+      await cacheService.hDelete(RedisKey.accounts, account.token);
+      break;
+    }
+  }
+  await cacheService.hSet(RedisKey.accounts, loginAccount.token, loginAccount);
 }

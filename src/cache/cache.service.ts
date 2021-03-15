@@ -59,6 +59,28 @@ export class CacheService {
   }
 
   /**
+   * 获取hashmap的所有值
+   * @param key
+   */
+  public async hValues(key: RedisKey): Promise<string[]> {
+    if (!this.client) {
+      await this.getClient();
+    }
+    return await this.client.hvals(key as string);
+  }
+
+  /**
+   * hashmap删除某个键
+   * @param key
+   * @param fieldKey
+   */
+  public async hDelete(key: RedisKey, fieldKey: string): Promise<any> {
+    if (!this.client) {
+      await this.getClient();
+    }
+    return await this.client.hdel(key, fieldKey);
+  }
+  /**
    * @desc 获取hashmap里面的某个键的值
    * @param key
    * @param fieldKey
