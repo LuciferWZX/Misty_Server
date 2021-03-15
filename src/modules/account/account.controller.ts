@@ -1,22 +1,15 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Post,
-} from '@nestjs/common';
-import { CreateAccountDto } from './dto/create-account.dto';
-import { LoginAccountDto } from './dto/login-account.dto';
-import { AccountService } from './account.service';
-import { Account } from '../../schemas/account.schema';
-import { ExceptionStatus } from '../../common/common.interface';
-import { CacheService } from '../../cache/cache.service';
-import { enCrypt, enCryptCompare } from '../../utils/help';
-import { AuthorityService } from '../authority/authority.service';
-import { AccountEntity } from './entity/account-entity';
-import { AuthService } from '../../auth/auth.service';
-import { RedisKey } from '../../config/redis.config';
+import {Body, Controller, Get, HttpException, HttpStatus, Post, Request} from '@nestjs/common';
+import {CreateAccountDto} from './dto/create-account.dto';
+import {LoginAccountDto} from './dto/login-account.dto';
+import {AccountService} from './account.service';
+import {Account} from '../../schemas/account.schema';
+import {ExceptionStatus} from '../../common/common.interface';
+import {CacheService} from '../../cache/cache.service';
+import {enCrypt, enCryptCompare} from '../../utils/help';
+import {AuthorityService} from '../authority/authority.service';
+import {AccountEntity} from './entity/account-entity';
+import {AuthService} from '../../auth/auth.service';
+import {RedisKey} from '../../config/redis.config';
 
 @Controller('account')
 export class AccountController {
@@ -118,8 +111,24 @@ export class AccountController {
     await this.cacheService.hSet(RedisKey.accounts, loginUser.token, loginUser);
     return loginUser;
   }
-  //查询所有账户
 
+  @Get('fetch_account_info')
+  async fetchAccountInfo(@Request() request):Promise<AccountEntity>{
+    console.log(request.headers.token)
+    const token=request.headers.token
+    if(token){
+      return await this.cacheService.hGet(RedisKey.accounts, token)
+    }else{
+      throw new HttpException(
+          {
+            code: ExceptionStatus.NOT_FIND,
+            message: '该用户不存在',
+          },
+          HttpStatus.UNAUTHORIZED,
+      );
+    }
+  }
+  //查询所有账户
   @Get('findAll')
   async getAll(): Promise<Account[]> {
     return await this.accountService.findAll();

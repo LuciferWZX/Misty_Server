@@ -33,9 +33,6 @@ export class AuthService {
    */
   async validateToken(token: string) {
     const data: string[] = await this.cacheService.hKeys(RedisKey.accounts);
-    const data2: string[] = await this.cacheService.hGetAll(RedisKey.accounts);
-    console.log(1, data);
-    console.log(2, data2);
     //await this.cacheService.flushAll();
     if (!data.find((accountToken) => accountToken === token)) {
       throw new HttpException(
