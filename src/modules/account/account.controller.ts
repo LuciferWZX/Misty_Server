@@ -19,6 +19,7 @@ import { AccountEntity } from './entity/account-entity';
 import { AuthService } from '../../auth/auth.service';
 import { RedisKey } from '../../config/redis.config';
 import { AccountControllerPath, Route } from '../../utils/route';
+import { CosService } from '../../cos/cos.service';
 
 @Controller(Route.account)
 export class AccountController {
@@ -27,6 +28,7 @@ export class AccountController {
     private readonly authorityService: AuthorityService, //private readonly authService: AuthService,
     private readonly authService: AuthService,
     private readonly cacheService: CacheService,
+    private readonly cosService: CosService,
   ) {}
 
   /**
@@ -142,6 +144,12 @@ export class AccountController {
   @Get(AccountControllerPath.find_all)
   async getAll(): Promise<Account[]> {
     return await this.accountService.findAll();
+  }
+
+  @Get('getImages')
+  async getImages(): Promise<any> {
+    //return await this.cosService.getService();
+    return await this.cosService.getFileList();
   }
 }
 
