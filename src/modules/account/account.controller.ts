@@ -6,6 +6,8 @@ import {
   HttpStatus,
   Post,
   Request,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { LoginAccountDto } from './dto/login-account.dto';
@@ -20,6 +22,9 @@ import { AuthService } from '../../auth/auth.service';
 import { RedisKey } from '../../config/redis.config';
 import { AccountControllerPath, Route } from '../../utils/route';
 import { CosService } from '../../cos/cos.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileEntity } from '../../cos/entity/file-entity';
+import { TenXunBucket, TenXunFileFold, TenXunRegion } from '../../cos/type';
 
 @Controller(Route.account)
 export class AccountController {
@@ -32,8 +37,7 @@ export class AccountController {
   ) {}
 
   /**
-   * todo
-   * 新增账户
+   * todo 新增账户
    * @param createAccountDto
    */
   @Post(AccountControllerPath.create)
@@ -58,8 +62,7 @@ export class AccountController {
   }
 
   /**
-   * todo
-   * 登录
+   * todo 登录
    * @param loginAccountDto
    */
 
@@ -151,11 +154,28 @@ export class AccountController {
     //return await this.cosService.getService();
     return await this.cosService.getFileList();
   }
+  @Post('uploadImage')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @UploadedFile() file: FileEntity,
+    @Body() uploadObject,
+  ): Promise<any> {
+    console.log(uploadObject);
+    return await this.cosService.uploadFile(
+      TenXunBucket.image,
+      TenXunRegion.nanJin,
+      TenXunFileFold.user,
+      file.originalname,
+      file.buffer,
+      (onProgress) => {
+        console.log(onProgress);
+      },
+    );
+  }
 }
 
 /**
- * todo
- * 检查昵称和用户名是否重复
+ * todo 检查昵称和用户名是否重复
  * @param service
  * @param accountNickname
  * @param accountUsername
@@ -192,8 +212,7 @@ async function checkRegisterParams(
 }
 
 /**
- * todo
- * 用来先检查redis是否存在之前的token，存在就删除不存在直接添加
+ * todo 用来先检查redis是否存在之前的token，存在就删除不存在直接添加
  * @param cacheService
  * @param loginAccount
  */

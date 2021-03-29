@@ -31,3 +31,12 @@ export function enCryptCompare(
   const bcrypt = require('bcrypt');
   return bcrypt.compareSync(password, enCryptPassword);
 }
+
+/**
+ * todo 获取文件后缀
+ * @param fileName
+ */
+export function getFileSuffix(fileName: string) {
+  const index = fileName.lastIndexOf('.');
+  return fileName.substr(index + 1);
+}
