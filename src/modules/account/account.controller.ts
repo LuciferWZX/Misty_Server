@@ -25,6 +25,9 @@ import { CosService } from '../../cos/cos.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileEntity } from '../../cos/entity/file-entity';
 import { TenXunBucket, TenXunFileFold, TenXunRegion } from '../../cos/type';
+import { CreateBankDto } from './dto/create-bank.dto';
+import { Bank } from '../../schemas/bank.schema';
+import { BankEntity } from './entity/bank-entity';
 
 @Controller(Route.account)
 export class AccountController {
@@ -65,9 +68,10 @@ export class AccountController {
    * todo 登录
    * @param loginAccountDto
    */
-
   @Post(AccountControllerPath.login)
-  async logo(@Body() loginAccountDto: LoginAccountDto): Promise<AccountEntity> {
+  async login(
+    @Body() loginAccountDto: LoginAccountDto,
+  ): Promise<AccountEntity> {
     const { accountPassword, accountUsername } = loginAccountDto;
     //查询用户
     const account = await this.accountService.findOneByAccountUsername(
@@ -127,6 +131,31 @@ export class AccountController {
     return loginUser;
   }
 
+  /**
+   * todo 新增一条银行记录
+   * @param createBankDto
+   */
+  @Post(AccountControllerPath.createBank)
+  async createBank(@Body() createBankDto: CreateBankDto): Promise<Bank> {
+    return this.accountService.createBank(createBankDto);
+  }
+
+  /**
+   * todo 查询所有的银行
+   */
+  @Get(AccountControllerPath.find_all_bank)
+  async findAllBank(): Promise<BankEntity[]> {
+    const banks: Bank[] = await this.accountService.findAllBank();
+    return banks.map((bank) => {
+      return {
+        id: bank.id,
+        bankName: bank.bankName,
+        bankDescription: bank.bankDescription,
+        bankImage: bank.bankImage,
+      };
+    });
+  }
+
   @Get(AccountControllerPath.fetch_account_info)
   async fetchAccountInfo(@Request() request): Promise<AccountEntity> {
     console.log(request.headers.token);
@@ -160,7 +189,6 @@ export class AccountController {
     @UploadedFile() file: FileEntity,
     @Body() uploadObject,
   ): Promise<any> {
-    console.log(uploadObject);
     return await this.cosService.uploadFile(
       TenXunBucket.image,
       TenXunRegion.nanJin,

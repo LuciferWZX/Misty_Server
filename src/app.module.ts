@@ -32,9 +32,12 @@ export class AppModule {
       .exclude(
         { path: 'account/login', method: RequestMethod.POST },
         { path: 'account/create', method: RequestMethod.POST },
-        { path: 'account/getImages', method: RequestMethod.GET },
-        { path: 'account/uploadImage', method: RequestMethod.POST },
+        // { path: 'account/getImages', method: RequestMethod.GET },
+        // { path: 'account/uploadImage', method: RequestMethod.POST },
       ) //排除要验证token的路由
-      .forRoutes('account');
+      .forRoutes(
+        { path: 'account', method: RequestMethod.ALL },
+        { path: 'user', method: RequestMethod.ALL },
+      );
   }
 }
