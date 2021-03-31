@@ -29,6 +29,8 @@ import { getFileSuffix } from '../../utils/help';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { FileEntity } from '../../cos/entity/file-entity';
 import { User } from '../../schemas/user.schema';
+import { IdentifyEntity } from './entity/identify-entity';
+import { IDCardOCRResponse } from 'tencentcloud-sdk-nodejs/tencentcloud/services/ocr/v20181119/ocr_models';
 
 @Controller(Route.user)
 export class UsersController {
@@ -123,5 +125,12 @@ export class UsersController {
   ): Promise<boolean> {
     const user = await this.usersService.findOne(key, value);
     return !!user;
+  }
+  //todo 识别身份证的文字
+  @Post(UserControllerPath.identifyIDCard)
+  async identifyIDCard(
+    @Body() identifyEntity: IdentifyEntity,
+  ): Promise<IDCardOCRResponse> {
+    return await this.cosService.idCardOrc(identifyEntity);
   }
 }

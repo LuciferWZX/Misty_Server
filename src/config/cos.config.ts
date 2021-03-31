@@ -1,7 +1,8 @@
 import { COSOptions } from 'cos-nodejs-sdk-v5';
+import TenXun from './sign.config';
 
 const cosOption: COSOptions = {
-  SecretId: 'AKIDlKgnihJyFJAtRmJUWO2uaIEKDqHj9zlJ', // 替换为你的SecretId
-  SecretKey: 'XquhFamAM2TaUR8dwBEDxRikaCiX9F8j', // 替换为你的SecretKey
+  SecretId: TenXun.secretId, // 替换为你的SecretId
+  SecretKey: TenXun.secretKey, // 替换为你的SecretKey
 };
 export default cosOption;

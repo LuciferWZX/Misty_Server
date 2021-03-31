@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import orcClientConfig from 'src/config/ocr.config';
 import cosOption from '../config/cos.config';
 import {
   TenXunBucket,
@@ -6,16 +7,31 @@ import {
   TenXunRegion,
   UploadProgressType,
 } from './type';
+import { Client } from 'tencentcloud-sdk-nodejs/tencentcloud/services/ocr/v20181119/ocr_client';
+import {
+  IDCardOCRRequest,
+  IDCardOCRResponse,
+} from 'tencentcloud-sdk-nodejs/tencentcloud/services/ocr/v20181119/ocr_models';
 
 @Injectable()
 export class CosService {
   private cosClient: any;
+
+  private ocrClient: Client;
   constructor() {
     this.initCosClient().then();
+    this.initOrcClient().then();
   }
+  //todo 文件上传client初始化
   private async initCosClient() {
     const COS = require('cos-nodejs-sdk-v5');
     this.cosClient = new COS(cosOption);
+  }
+  //todo 身份证识别client初始化
+  private async initOrcClient() {
+    const tencentCloud = require('tencentcloud-sdk-nodejs');
+    const OCR = tencentCloud.ocr.v20181119.Client;
+    this.ocrClient = new OCR(orcClientConfig);
   }
   //查询存储桶列表
   public async getService(): Promise<void> {
@@ -100,6 +116,24 @@ export class CosService {
             Logger.log(`${fileName}上传成功`);
             resolve(data);
           }
+        },
+      );
+    });
+  }
+
+  /**
+   * todo 识别身份证
+   * @param params
+   */
+  public async idCardOrc(params: IDCardOCRRequest): Promise<IDCardOCRResponse> {
+    return new Promise((resolve, reject) => {
+      this.ocrClient.IDCardOCR(params).then(
+        (data) => {
+          resolve(data);
+        },
+        (err) => {
+          Logger.error(err);
+          reject(err);
         },
       );
     });

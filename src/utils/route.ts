@@ -13,4 +13,5 @@ export enum AccountControllerPath {
 export enum UserControllerPath {
   create = 'create',
   isUsed = 'isUsedByUser',
+  identifyIDCard = 'identifyIDCard',
 }

@@ -9,6 +9,7 @@ export enum TenXunFileFold {
 //文件上传地域
 export enum TenXunRegion {
   nanJin = 'ap-nanjing',
+  shangHai = 'ap-shanghai',
 }
 //上传文件的进度
 export interface UploadProgressType {
