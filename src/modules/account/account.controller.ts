@@ -25,9 +25,6 @@ import { CosService } from '../../cos/cos.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileEntity } from '../../cos/entity/file-entity';
 import { TenXunBucket, TenXunFileFold, TenXunRegion } from '../../cos/type';
-import { CreateBankDto } from './dto/create-bank.dto';
-import { Bank } from '../../schemas/bank.schema';
-import { BankEntity } from './entity/bank-entity';
 
 @Controller(Route.account)
 export class AccountController {
@@ -40,24 +37,16 @@ export class AccountController {
   ) {}
 
   /**
-   * todo 新增账户
+   * todo 新增账户(临时方案)
    * @param createAccountDto
    */
   @Post(AccountControllerPath.create)
   async create(@Body() createAccountDto: CreateAccountDto): Promise<Account> {
-    const {
-      accountNickname,
-      accountUsername,
-      accountPassword,
-    } = createAccountDto;
-    await checkRegisterParams(
-      this.accountService,
-      accountNickname,
-      accountUsername,
-    );
+    const { nickname, username, password } = createAccountDto;
+    await checkRegisterParams(this.accountService, nickname, username);
     const account = this.accountService.create({
       ...createAccountDto,
-      accountPassword: enCrypt(accountPassword),
+      password: enCrypt(password),
     });
     if (account) {
       return account;
@@ -72,14 +61,14 @@ export class AccountController {
   async login(
     @Body() loginAccountDto: LoginAccountDto,
   ): Promise<AccountEntity> {
-    const { accountPassword, accountUsername } = loginAccountDto;
+    const { password, email } = loginAccountDto;
     //查询用户
-    const account = await this.accountService.findOneByAccountUsername(
-      accountUsername,
+    const account = await this.accountService.findOneByAccountEmail(
+      email,
       true,
     );
     if (account) {
-      if (!enCryptCompare(account.accountPassword, accountPassword)) {
+      if (!enCryptCompare(account.password, password)) {
         throw new HttpException(
           {
             code: ExceptionStatus.PASSWORD_ERROR,
@@ -116,9 +105,10 @@ export class AccountController {
       authorityLevel: account.authorityLevel,
       email: account.email,
       phone: account.phone,
-      accountUsername: account.accountUsername,
-      accountNickname: account.accountNickname,
-      accountPassword: account.accountPassword,
+      username: account.username,
+      nickname: account.nickname,
+      password: account.password,
+      avatar: account.avatar,
       authority: {
         id: authority.id,
         name: authority.authorityName,
@@ -132,30 +122,9 @@ export class AccountController {
   }
 
   /**
-   * todo 新增一条银行记录
-   * @param createBankDto
+   * todo 更具token获取redis里面的用户信息
+   * @param request
    */
-  @Post(AccountControllerPath.createBank)
-  async createBank(@Body() createBankDto: CreateBankDto): Promise<Bank> {
-    return this.accountService.createBank(createBankDto);
-  }
-
-  /**
-   * todo 查询所有的银行
-   */
-  @Get(AccountControllerPath.find_all_bank)
-  async findAllBank(): Promise<BankEntity[]> {
-    const banks: Bank[] = await this.accountService.findAllBank();
-    return banks.map((bank) => {
-      return {
-        id: bank.id,
-        bankName: bank.bankName,
-        bankDescription: bank.bankDescription,
-        bankImage: bank.bankImage,
-      };
-    });
-  }
-
   @Get(AccountControllerPath.fetch_account_info)
   async fetchAccountInfo(@Request() request): Promise<AccountEntity> {
     console.log(request.headers.token);
@@ -205,16 +174,16 @@ export class AccountController {
 /**
  * todo 检查昵称和用户名是否重复
  * @param service
- * @param accountNickname
- * @param accountUsername
+ * @param nickname
+ * @param username
  */
 async function checkRegisterParams(
   service: AccountService,
-  accountNickname: string,
-  accountUsername: string,
+  nickname: string,
+  username: string,
 ): Promise<void> {
   const accountByNickname: Account | null = await service.findOneByAccountNickname(
-    accountNickname,
+    nickname,
   );
   if (accountByNickname) {
     throw new HttpException(
@@ -225,10 +194,10 @@ async function checkRegisterParams(
       HttpStatus.UNAUTHORIZED,
     );
   }
-  const accountByUsername: Account | null = await service.findOneByAccountUsername(
-    accountUsername,
+  const usernameIsExist: Account | null = await service.findOneByAccountUsername(
+    username,
   );
-  if (accountByUsername) {
+  if (usernameIsExist) {
     throw new HttpException(
       {
         code: ExceptionStatus.CREATE_FAILED,

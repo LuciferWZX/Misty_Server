@@ -1,7 +1,8 @@
 export class CreateAccountDto {
-  accountUsername: string;
-  accountNickname: string;
-  accountPassword: string;
+  username: string;
+  nickname: string;
+  password: string;
+  avatar: string;
   email: string;
   phone: string;
 }

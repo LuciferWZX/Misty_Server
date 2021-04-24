@@ -5,7 +5,7 @@ interface MongodbConfig {
   options?: MongooseModuleOptions;
 }
 const mongodbConfig: MongodbConfig = {
-  url: 'mongodb://localhost:27017/db_misty',
+  url: 'mongodb://localhost:27017/db_we_media',
   options: {
     useCreateIndex: true,
   },

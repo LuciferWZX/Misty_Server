@@ -15,7 +15,7 @@ export class Authority extends Document {
   authorityName: string;
   @Prop({ default: '' })
   authorityDescription: string;
-  @Prop({ required: true, default: AccountAuthority.Level_1, unique: true })
+  @Prop({ required: true, default: AccountAuthority.user, unique: true })
   authorityLevel: AccountAuthority;
 }
 export type AuthorityDocument = Authority & Document;

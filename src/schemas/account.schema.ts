@@ -18,21 +18,26 @@ export class Account extends Document {
     minlength: [2, '用户名长度不能小于2'],
     maxlength: [10, '用户名长度不能大于10'],
   })
-  accountUsername: string; //登录的用户名
+  username: string; //登录的用户名
   @Prop({
     required: true,
     unique: true,
     minlength: [2, '昵称长度不能小于2'],
     maxlength: [10, '昵称长度不能大于10'],
   })
-  accountNickname: string; //显示的昵称
+  nickname: string; //显示的昵称
   @Prop({ required: true })
-  accountPassword: string; //密码
+  password: string; //密码
   @Prop({ unique: [true, '邮箱重复'] })
   email: string; //邮箱
-  @Prop({ unique: [false, '手机重复'] })
+  @Prop({ unique: [true, '手机重复'] })
   phone: string; //电话
-  @Prop({ required: true, default: AccountAuthority.Level_1 })
+  @Prop({
+    default:
+      'https://dss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1851283359,3457678391&fm=26&gp=0.jpg',
+  })
+  avatar: string; //头像
+  @Prop({ required: true, default: AccountAuthority.user })
   authorityLevel: AccountAuthority; //权限
 }
 export type AccountDocument = Account & Document;

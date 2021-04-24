@@ -7,14 +7,10 @@ import { CacheService } from '../../cache/cache.service';
 import { AuthorityModule } from '../authority/authority.module';
 import { AuthModule } from '../../auth/auth.module';
 import { CosModule } from '../../cos/cos.module';
-import { Bank, BankSchema } from '../../schemas/bank.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Account.name, schema: AccountSchema },
-      { name: Bank.name, schema: BankSchema },
-    ]),
+    MongooseModule.forFeature([{ name: Account.name, schema: AccountSchema }]),
     AuthorityModule,
     AuthModule,
     CosModule,

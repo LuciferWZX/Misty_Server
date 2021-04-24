@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './common/logger.middleware';
-import { UsersModule } from './modules/user/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AccountModule } from './modules/account/account.module';
 import { CacheModule } from './cache/cache.module';
@@ -20,7 +19,6 @@ import { AuthModule } from './auth/auth.module';
     AuthorityModule,
     AccountModule,
     AuthModule,
-    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, CacheService, AuthService],
@@ -36,8 +34,7 @@ export class AppModule {
         // { path: 'account/uploadImage', method: RequestMethod.POST },
       ) //排除要验证token的路由
       .forRoutes(
-        { path: 'account', method: RequestMethod.ALL },
-        { path: 'user', method: RequestMethod.ALL },
+        { path: 'account', method: RequestMethod.ALL }
       );
   }
 }

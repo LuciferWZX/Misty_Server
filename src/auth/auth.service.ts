@@ -18,7 +18,7 @@ export class AuthService {
    */
   async genAccountToken(account: Account): Promise<string> {
     const payload = {
-      username: account.accountUsername,
+      username: account.username,
       id: account.id,
       sub: account.id,
     };
