@@ -10,6 +10,9 @@ export namespace Authority {
     superAdmin,
     admin,
     user,
-    reader
+    reader,
   }
+}
+export namespace GlobalPrefix {
+  export const PREFIX = 'api';
 }

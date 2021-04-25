@@ -102,12 +102,10 @@ export class AccountController {
     const token = await this.authService.genAccountToken(account);
     const loginUser: AccountEntity = {
       id: account.id,
-      authorityLevel: account.authorityLevel,
       email: account.email,
       phone: account.phone,
       username: account.username,
       nickname: account.nickname,
-      password: account.password,
       avatar: account.avatar,
       authority: {
         id: authority.id,

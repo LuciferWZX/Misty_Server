@@ -10,6 +10,8 @@ import { AuthorityModule } from './modules/authority/authority.module';
 import { CacheService } from './cache/cache.service';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
+import { GlobalPrefix } from './utils/type';
+import PREFIX = GlobalPrefix.PREFIX;
 
 @Module({
   imports: [
@@ -28,13 +30,11 @@ export class AppModule {
     consumer
       .apply(LoggerMiddleware)
       .exclude(
-        { path: 'account/login', method: RequestMethod.POST },
-        { path: 'account/create', method: RequestMethod.POST },
+        { path: `${PREFIX}/account/login`, method: RequestMethod.POST },
+        { path: `${PREFIX}/account/create`, method: RequestMethod.POST },
         // { path: 'account/getImages', method: RequestMethod.GET },
         // { path: 'account/uploadImage', method: RequestMethod.POST },
       ) //排除要验证token的路由
-      .forRoutes(
-        { path: 'account', method: RequestMethod.ALL }
-      );
+      .forRoutes({ path: 'account', method: RequestMethod.ALL });
   }
 }

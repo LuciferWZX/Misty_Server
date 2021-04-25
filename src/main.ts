@@ -4,8 +4,10 @@ import { initSwagger } from './utils/initConfig';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
 import * as bodyParser from 'body-parser';
+import { GlobalPrefix } from './utils/type';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix(GlobalPrefix.PREFIX);
   // 全局注册错误的过滤器
   app.useGlobalFilters(new HttpExceptionFilter());
 
