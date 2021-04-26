@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Post,
@@ -57,6 +58,7 @@ export class AccountController {
    * todo 登录
    * @param loginAccountDto
    */
+  @HttpCode(HttpStatus.OK)
   @Post(AccountControllerPath.login)
   async login(
     @Body() loginAccountDto: LoginAccountDto,
