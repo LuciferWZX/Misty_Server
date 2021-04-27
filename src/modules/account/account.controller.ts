@@ -125,6 +125,7 @@ export class AccountController {
    * todo 更具token获取redis里面的用户信息
    * @param request
    */
+
   @Get(AccountControllerPath.fetch_account_info)
   async fetchAccountInfo(@Request() request): Promise<AccountEntity> {
     console.log(request.headers.token);
@@ -141,6 +142,7 @@ export class AccountController {
       );
     }
   }
+
   //查询所有账户
   @Get(AccountControllerPath.find_all)
   async getAll(): Promise<Account[]> {
