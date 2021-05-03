@@ -14,3 +14,8 @@ export enum ExceptionStatus {
   NO_TOKEN = 20003, //没有token
   TOKEN_EXPIRED = 20004,
 }
+
+export enum VideoEditStatus {
+  finished = 'finished', //以及编辑完成
+  processing = 'processing', //尚未完成
+}

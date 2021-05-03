@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { VideoEditStatus } from '../common/common.interface';
 
 @Schema({
   collection: 'tb_video',
@@ -29,6 +30,13 @@ export class Video extends Document {
     default: [],
   })
   videoTags: string[]; //视频的tag
+  @Prop({
+    default: [],
+  })
+  @Prop({
+    default: VideoEditStatus.processing,
+  })
+  editStatus: VideoEditStatus; //视频的tag
 }
 export type VideoDocument = Video & Document;
 export const VideoSchema = SchemaFactory.createForClass(Video);
