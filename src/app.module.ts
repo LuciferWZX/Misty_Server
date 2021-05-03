@@ -12,6 +12,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { GlobalPrefix } from './utils/type';
 import PREFIX = GlobalPrefix.PREFIX;
+import { VideoModule } from './modules/video/video.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import PREFIX = GlobalPrefix.PREFIX;
     AuthorityModule,
     AccountModule,
     AuthModule,
+    VideoModule,
   ],
   controllers: [AppController],
   providers: [AppService, CacheService, AuthService],

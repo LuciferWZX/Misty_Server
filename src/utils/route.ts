@@ -1,5 +1,6 @@
 export enum Route {
   account = 'account',
+  video = 'video',
   user = 'user',
 }
 export enum AccountControllerPath {
@@ -9,6 +10,10 @@ export enum AccountControllerPath {
   fetch_account_info = 'fetch_account_info',
   find_all = 'find_all',
   find_all_bank = 'find_all_bank',
+}
+export enum VideoControllerPath {
+  create = 'create',
+  uploadVideo = 'uploadVideo',
 }
 export enum UserControllerPath {
   create = 'create',
