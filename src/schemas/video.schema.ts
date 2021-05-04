@@ -22,19 +22,23 @@ export class Video extends Document {
   })
   videoTitle: string; //视频的标题
   @Prop({
+    required: true,
     default: null,
   })
   videoDesc: string; //视频的描述
   @Prop({
+    required: true,
     default: null,
   })
   videoImage: string; //视频的图片
 
   @Prop({
     default: [],
+    required: true,
   })
   videoTags: string[]; //视频的tag
   @Prop({
+    required: true,
     default: VideoEditStatus.processing,
   })
   editStatus: VideoEditStatus; //该视频的状态是否是编辑状态

@@ -3,6 +3,7 @@ import { CosService } from '../../cos/cos.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Video, VideoDocument } from '../../schemas/video.schema';
+import { VideoEditStatus } from '../../common/common.interface';
 
 @Injectable()
 export class VideoService {
@@ -15,10 +16,11 @@ export class VideoService {
   async saveProcessingVideo(
     uploaderId: string,
     videoTitle: string,
-  ): Promise<any> {
+  ): Promise<Video> {
     return this.videoModal.updateOne(
       {
         uploaderId: uploaderId,
+        editStatus: VideoEditStatus.processing,
       },
       {
         $set: {
@@ -34,6 +36,18 @@ export class VideoService {
   async getProcessingVideo(uploaderId: string): Promise<Video> {
     return this.videoModal.findOne({
       uploaderId: uploaderId,
+      editStatus: VideoEditStatus.processing,
+    });
+  }
+
+  /**
+   * @todo 删除未完成的数据
+   * @param uploaderId
+   */
+  async abortProcessingVideo(uploaderId: string): Promise<Video> {
+    return this.videoModal.findOneAndDelete({
+      uploaderId: uploaderId,
+      editStatus: VideoEditStatus.processing,
     });
   }
 }

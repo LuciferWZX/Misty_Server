@@ -15,6 +15,7 @@ import {
 } from 'tencentcloud-sdk-nodejs/tencentcloud/services/ocr/v20181119/ocr_models';
 import COS, {
   CosError,
+  DeleteObjectResult,
   PutBucketResult,
   PutObjectResult,
 } from 'cos-nodejs-sdk-v5';
@@ -160,11 +161,10 @@ export class CosService {
   }
 
   /**
-   * 上传视频
+   * @todo 上传视频
    * @param accountId
    * @param region
    * @param field
-   * @param video
    */
   public async uploadVideo({
     accountId,
@@ -195,6 +195,42 @@ export class CosService {
           }
           if (err) {
             Logger.error(`上传视频出错：${JSON.stringify(err)}`);
+            reject(err);
+          }
+        },
+      );
+    });
+  }
+
+  /**
+   * @todo 删除视频
+   * @param accountId
+   * @param region
+   * @param videoTitle
+   */
+  public async deleteVideo({
+    accountId,
+    region = TenXunRegion.shangHai,
+    videoTitle,
+  }: {
+    accountId: string;
+    region?: TenXunRegion;
+    videoTitle: string;
+  }): Promise<CosError | DeleteObjectResult> {
+    return new Promise((resolve, reject) => {
+      this.cosClient.deleteObject(
+        {
+          Bucket: `${accountId}-${appId}`,
+          Region: region,
+          Key: `${BucketField.video}${videoTitle}`,
+        },
+        function (err, data) {
+          if (data) {
+            Logger.log(`删除视频成功：${JSON.stringify(data)}`);
+            resolve(data);
+          }
+          if (err) {
+            Logger.error(`删除视频出错：${JSON.stringify(err)}`);
             reject(err);
           }
         },
