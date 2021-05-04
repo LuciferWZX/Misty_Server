@@ -45,11 +45,14 @@ export class AccountController {
   async create(@Body() createAccountDto: CreateAccountDto): Promise<Account> {
     const { nickname, username, password } = createAccountDto;
     await checkRegisterParams(this.accountService, nickname, username);
-    const account = this.accountService.create({
+    const account: Account = await this.accountService.create({
       ...createAccountDto,
       password: enCrypt(password),
     });
     if (account) {
+      await this.cosService.createBucket({
+        bucketName: account.id,
+      });
       return account;
     }
   }

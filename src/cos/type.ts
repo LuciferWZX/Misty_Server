@@ -11,6 +11,12 @@ export enum TenXunRegion {
   nanJin = 'ap-nanjing',
   shangHai = 'ap-shanghai',
 }
+//bucket下面需要操作的文件夹
+export enum BucketField {
+  video = 'video/',
+  image = 'image/',
+}
+
 //上传文件的进度
 export interface UploadProgressType {
   loaded: number; //已经上传的文件部分大小，以字节（Bytes）为单位

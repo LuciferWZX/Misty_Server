@@ -14,6 +14,7 @@ export enum AccountControllerPath {
 export enum VideoControllerPath {
   create = 'create',
   uploadVideo = 'uploadVideo',
+  getUploadingVideo = 'getUploadingVideo',
 }
 export enum UserControllerPath {
   create = 'create',

@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import orcClientConfig from 'src/config/ocr.config';
-import cosOption from '../config/cos.config';
+import cosOption, { appId } from '../config/cos.config';
 import {
+  BucketField,
   TenXunBucket,
   TenXunFileFold,
   TenXunRegion,
@@ -12,10 +13,15 @@ import {
   IDCardOCRRequest,
   IDCardOCRResponse,
 } from 'tencentcloud-sdk-nodejs/tencentcloud/services/ocr/v20181119/ocr_models';
+import COS, {
+  CosError,
+  PutBucketResult,
+  PutObjectResult,
+} from 'cos-nodejs-sdk-v5';
 
 @Injectable()
 export class CosService {
-  private cosClient: any;
+  private cosClient: COS;
 
   private ocrClient: Client;
   constructor() {
@@ -24,8 +30,8 @@ export class CosService {
   }
   //todo 文件上传client初始化
   private async initCosClient() {
-    const COS = require('cos-nodejs-sdk-v5');
-    this.cosClient = new COS(cosOption);
+    const COST = require('cos-nodejs-sdk-v5');
+    this.cosClient = new COST(cosOption);
   }
   //todo 身份证识别client初始化
   private async initOrcClient() {
@@ -96,25 +102,100 @@ export class CosService {
     onProgress?: (onProgress: UploadProgressType) => void,
   ): Promise<any> {
     return new Promise((resolve, reject) => {
+      // this.cosClient.putObject(
+      //   {
+      //     Bucket: bucket /* 必须 */,
+      //     Region: region /* 必须 */,
+      //     Key: `${fold}${fileName}`,
+      //     Body: buffer, // 上传文件对象
+      //     onProgress: function (progressData: UploadProgressType) {
+      //       Logger.warn('文件上传的进度：' + progressData.percent);
+      //       onProgress?.(progressData);
+      //     },
+      //   },
+      //   function (err, data) {
+      //     if (err) {
+      //       Logger.error(`${fileName}上传失败`);
+      //       reject(err);
+      //     }
+      //     if (data) {
+      //       Logger.log(`${fileName}上传成功`);
+      //       resolve(data);
+      //     }
+      //   },
+      // );
+    });
+  }
+
+  /**
+   * @todo 创建存储桶
+   * @param bucketName
+   * @param region
+   */
+  public async createBucket({
+    bucketName,
+    region = TenXunRegion.shangHai,
+  }: {
+    bucketName: string;
+    region?: TenXunRegion;
+  }): Promise<PutBucketResult | CosError> {
+    return new Promise((resolve, reject) => {
+      this.cosClient.putBucket(
+        {
+          Bucket: `${bucketName}-${appId}`,
+          Region: region,
+        },
+        function (err, data) {
+          if (data) {
+            Logger.log(`创建存储桶成功：${data}`);
+            resolve(data);
+          }
+          if (err) {
+            Logger.error(`创建存储桶出错：${err}`);
+            reject(err);
+          }
+        },
+      );
+    });
+  }
+
+  /**
+   * 上传视频
+   * @param accountId
+   * @param region
+   * @param field
+   * @param video
+   */
+  public async uploadVideo({
+    accountId,
+    region = TenXunRegion.shangHai,
+    bufferVideo,
+    videoTitle,
+  }: {
+    accountId: string;
+    region?: TenXunRegion;
+    bufferVideo: Buffer;
+    videoTitle: string;
+  }): Promise<PutObjectResult | CosError> {
+    return new Promise((resolve, reject) => {
       this.cosClient.putObject(
         {
-          Bucket: bucket /* 必须 */,
-          Region: region /* 必须 */,
-          Key: `${fold}${fileName}`,
-          Body: buffer, // 上传文件对象
+          Bucket: `${accountId}-${appId}`,
+          Region: region,
+          Key: `${BucketField.video}${videoTitle}`,
+          Body: bufferVideo,
           onProgress: function (progressData: UploadProgressType) {
-            Logger.warn('文件上传的进度：' + progressData.percent);
-            onProgress?.(progressData);
+            Logger.warn('视频上传的进度：' + progressData.percent);
           },
         },
         function (err, data) {
-          if (err) {
-            Logger.error(`${fileName}上传失败`);
-            reject(err);
-          }
           if (data) {
-            Logger.log(`${fileName}上传成功`);
+            Logger.log(`上传视频成功：${JSON.stringify(data)}`);
             resolve(data);
+          }
+          if (err) {
+            Logger.error(`上传视频出错：${JSON.stringify(err)}`);
+            reject(err);
           }
         },
       );
