@@ -37,6 +37,7 @@ export class AppModule {
       .exclude(
         { path: `${PREFIX}/account/login`, method: RequestMethod.POST },
         { path: `${PREFIX}/account/create`, method: RequestMethod.POST },
+        { path: `${PREFIX}/video/uploadVideo`, method: RequestMethod.POST },
         // { path: 'account/getImages', method: RequestMethod.GET },
         // { path: 'account/uploadImage', method: RequestMethod.POST },
       ) //排除要验证token的路由

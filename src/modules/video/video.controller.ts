@@ -17,6 +17,7 @@ import { VideoService } from './video.service';
 import { VideoEntity } from './entity/video-entity';
 import { Video } from '../../schemas/video.schema';
 import { BucketField } from '../../cos/type';
+import { getFileSuffix } from '../../utils/help';
 
 @Controller(Route.video)
 export class VideoController {
@@ -50,7 +51,9 @@ export class VideoController {
         await this.videoService.abortProcessingVideo(video.uploaderId);
       }
     }
-    const tenXunFileName = dayjs().format('YYYYMMDDHHmmss');
+    const tenXunFileName = `${dayjs().format('YYYYMMDDHHmmss')}.${getFileSuffix(
+      videoFile.originalname,
+    )}`;
     const response = await this.cosService.uploadVideo({
       accountId: id,
       bufferVideo: videoFile.buffer,
