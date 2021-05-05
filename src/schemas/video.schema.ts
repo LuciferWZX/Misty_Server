@@ -17,8 +17,8 @@ export class Video extends Document {
   uploaderId: string; //上传视频的人的id
   @Prop({
     required: true,
-    // minlength: [2, '标题长度不能小于2'],
-    // maxlength: [10, '标题长度不能大于20'],
+    minlength: [2, '标题长度不能小于2'],
+    maxlength: [10, '标题长度不能大于80'],
   })
   videoTitle: string; //视频的标题
   @Prop({
@@ -31,7 +31,10 @@ export class Video extends Document {
     default: null,
   })
   videoImage: string; //视频的图片
-
+  @Prop({
+    required: true,
+  })
+  videoBucketKey: string; //视频存入的腾讯存储桶的key
   @Prop({
     default: [],
     required: true,

@@ -13,6 +13,8 @@ import { AuthModule } from './auth/auth.module';
 import { GlobalPrefix } from './utils/type';
 import PREFIX = GlobalPrefix.PREFIX;
 import { VideoModule } from './modules/video/video.module';
+import { SubareaModule } from './modules/subarea/subarea.module';
+import { Route } from './utils/route';
 
 @Module({
   imports: [
@@ -23,6 +25,7 @@ import { VideoModule } from './modules/video/video.module';
     AccountModule,
     AuthModule,
     VideoModule,
+    SubareaModule,
   ],
   controllers: [AppController],
   providers: [AppService, CacheService, AuthService],
@@ -37,6 +40,10 @@ export class AppModule {
         // { path: 'account/getImages', method: RequestMethod.GET },
         // { path: 'account/uploadImage', method: RequestMethod.POST },
       ) //排除要验证token的路由
-      .forRoutes({ path: 'account', method: RequestMethod.ALL });
+      .forRoutes(
+        { path: Route.account, method: RequestMethod.ALL },
+        { path: Route.subarea, method: RequestMethod.ALL },
+        { path: Route.video, method: RequestMethod.ALL },
+      );
   }
 }

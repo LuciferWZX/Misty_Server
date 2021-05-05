@@ -2,6 +2,7 @@ export enum Route {
   account = 'account',
   video = 'video',
   user = 'user',
+  subarea = 'subarea',
 }
 export enum AccountControllerPath {
   create = 'create',
@@ -16,6 +17,11 @@ export enum VideoControllerPath {
   uploadVideo = 'uploadVideo',
   getUploadingVideo = 'getUploadingVideo',
   abortProcessingVideo = 'abortProcessingVideo',
+}
+export enum SubareaControllerPath {
+  create_parent = 'createParent',
+  create_children = 'createChildren',
+  query_subarea = 'querySubarea',
 }
 export enum UserControllerPath {
   create = 'create',

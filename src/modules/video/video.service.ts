@@ -16,7 +16,8 @@ export class VideoService {
   async saveProcessingVideo(
     uploaderId: string,
     videoTitle: string,
-  ): Promise<Video> {
+    videoBucketKey: string,
+  ): Promise<any> {
     return this.videoModal.updateOne(
       {
         uploaderId: uploaderId,
@@ -25,6 +26,7 @@ export class VideoService {
       {
         $set: {
           videoTitle: videoTitle,
+          videoBucketKey: videoBucketKey,
         },
       },
       {

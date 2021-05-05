@@ -8,4 +8,5 @@ export class VideoEntity {
   videoTitle: string;
   uploaderId?: string;
   editStatus: VideoEditStatus;
+  videoBucketKey: string;
 }

@@ -170,19 +170,19 @@ export class CosService {
     accountId,
     region = TenXunRegion.shangHai,
     bufferVideo,
-    videoTitle,
+    tenXunFileName,
   }: {
     accountId: string;
     region?: TenXunRegion;
     bufferVideo: Buffer;
-    videoTitle: string;
+    tenXunFileName: string;
   }): Promise<PutObjectResult | CosError> {
     return new Promise((resolve, reject) => {
       this.cosClient.putObject(
         {
           Bucket: `${accountId}-${appId}`,
           Region: region,
-          Key: `${BucketField.video}${videoTitle}`,
+          Key: `${BucketField.video}${tenXunFileName}`,
           Body: bufferVideo,
           onProgress: function (progressData: UploadProgressType) {
             Logger.warn('视频上传的进度：' + progressData.percent);
@@ -211,18 +211,18 @@ export class CosService {
   public async deleteVideo({
     accountId,
     region = TenXunRegion.shangHai,
-    videoTitle,
+    videoBucketKey,
   }: {
     accountId: string;
     region?: TenXunRegion;
-    videoTitle: string;
+    videoBucketKey: string;
   }): Promise<CosError | DeleteObjectResult> {
     return new Promise((resolve, reject) => {
       this.cosClient.deleteObject(
         {
           Bucket: `${accountId}-${appId}`,
           Region: region,
-          Key: `${BucketField.video}${videoTitle}`,
+          Key: videoBucketKey,
         },
         function (err, data) {
           if (data) {

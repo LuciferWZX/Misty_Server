@@ -16,6 +16,7 @@ import { CosService } from '../../cos/cos.service';
 import { VideoService } from './video.service';
 import { VideoEntity } from './entity/video-entity';
 import { Video } from '../../schemas/video.schema';
+import { BucketField } from '../../cos/type';
 
 @Controller(Route.video)
 export class VideoController {
@@ -36,16 +37,31 @@ export class VideoController {
     @UploadedFile() videoFile: FileEntity,
     @Query() params: { id: string },
   ): Promise<Video | null> {
+    const dayjs = require('dayjs');
     const { id } = params;
+    //@todo 先查询表里是否有名称 一样的视频 有 找到视频的videoBucketKey并删除
+    const video = await this.videoService.getProcessingVideo(id);
+    if (video) {
+      const data = await this.cosService.deleteVideo({
+        accountId: video.uploaderId,
+        videoBucketKey: video.videoBucketKey,
+      });
+      if (data.statusCode === HttpStatus.NO_CONTENT) {
+        await this.videoService.abortProcessingVideo(video.uploaderId);
+      }
+    }
+    const tenXunFileName = dayjs().format('YYYYMMDDHHmmss');
     const response = await this.cosService.uploadVideo({
       accountId: id,
       bufferVideo: videoFile.buffer,
-      videoTitle: videoFile.originalname,
+      tenXunFileName: tenXunFileName,
     });
     if (response.statusCode === HttpStatus.OK) {
+      //`${BucketField.video}${tenXunFileName}`
       return await this.videoService.saveProcessingVideo(
         id,
         videoFile.originalname,
+        `${BucketField.video}${tenXunFileName}`,
       );
     }
     return null;
@@ -70,20 +86,29 @@ export class VideoController {
         videoImage: video.videoImage,
         videoTags: video.videoTags,
         videoTitle: video.videoTitle,
+        videoBucketKey: video.videoBucketKey,
       };
     }
     return null;
   }
 
+  /**
+   * @todo 放弃上次编辑（删除存储桶以及数据库的数据）
+   * @param params
+   */
   @HttpCode(HttpStatus.OK)
   @Post(VideoControllerPath.abortProcessingVideo)
   async abortProcessingVideo(
-    @Body() params: { userId: string; videoTitle: string },
+    @Body()
+    params: {
+      userId: string;
+      videoBucketKey: string;
+    },
   ) {
-    const { userId, videoTitle } = params;
+    const { userId, videoBucketKey } = params;
     const data = await this.cosService.deleteVideo({
       accountId: userId,
-      videoTitle: videoTitle,
+      videoBucketKey: videoBucketKey,
     });
     if (data.statusCode === HttpStatus.NO_CONTENT) {
       return await this.videoService.abortProcessingVideo(userId);
