@@ -17,6 +17,7 @@ export enum VideoControllerPath {
   uploadVideo = 'uploadVideo',
   getUploadingVideo = 'getUploadingVideo',
   abortProcessingVideo = 'abortProcessingVideo',
+  query_all_tags = 'queryAllTags',
 }
 export enum SubareaControllerPath {
   create_parent = 'createParent',

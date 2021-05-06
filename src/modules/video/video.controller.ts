@@ -18,6 +18,7 @@ import { VideoEntity } from './entity/video-entity';
 import { Video } from '../../schemas/video.schema';
 import { BucketField } from '../../cos/type';
 import { getFileSuffix } from '../../utils/help';
+import { CreateVideoEntity } from './entity/create-video-entity';
 
 @Controller(Route.video)
 export class VideoController {
@@ -93,6 +94,33 @@ export class VideoController {
       };
     }
     return null;
+  }
+
+  /**
+   * @todo 查询全部的标签
+   */
+  @Get(VideoControllerPath.query_all_tags)
+  async queryAlTags(): Promise<Array<{ id: string; label: string }>> {
+    const tags = await this.videoService.getAllTags();
+    return tags.map((tag) => {
+      return {
+        id: tag.id,
+        label: tag.label,
+      };
+    });
+  }
+
+  /**
+   * @todo 创建视频
+   * @param createVideoEntity
+   */
+  @Post(VideoControllerPath.create)
+  async create(@Body() createVideoEntity: CreateVideoEntity) {
+    await this.videoService.batchCreateTags(
+      createVideoEntity.tags,
+      createVideoEntity.creatorId,
+    );
+    return 'www';
   }
 
   /**
