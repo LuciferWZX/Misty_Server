@@ -38,7 +38,7 @@ export class VideoController {
   async uploadVideo(
     @UploadedFile() videoFile: FileEntity,
     @Query() params: { id: string },
-  ): Promise<Video | null> {
+  ): Promise<any | null> {
     const dayjs = require('dayjs');
     const { id } = params;
     //@todo 先查询表里是否有名称 一样的视频 有 找到视频的videoBucketKey并删除
@@ -61,11 +61,11 @@ export class VideoController {
       tenXunFileName: tenXunFileName,
     });
     if (response.statusCode === HttpStatus.OK) {
-      //`${BucketField.video}${tenXunFileName}`
       return await this.videoService.saveProcessingVideo(
         id,
         videoFile.originalname,
         `${BucketField.video}${tenXunFileName}`,
+        response.Location,
       );
     }
     return null;

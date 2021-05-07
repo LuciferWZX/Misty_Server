@@ -36,6 +36,10 @@ export class Video extends Document {
   })
   videoBucketKey: string; //视频存入的腾讯存储桶的key
   @Prop({
+    required: true,
+  })
+  videoLocation: string;
+  @Prop({
     default: [],
     required: true,
   })

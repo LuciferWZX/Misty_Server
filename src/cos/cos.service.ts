@@ -176,7 +176,7 @@ export class CosService {
     region?: TenXunRegion;
     bufferVideo: Buffer;
     tenXunFileName: string;
-  }): Promise<PutObjectResult | CosError> {
+  }): Promise<PutObjectResult> {
     return new Promise((resolve, reject) => {
       this.cosClient.putObject(
         {

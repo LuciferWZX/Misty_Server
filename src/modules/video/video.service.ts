@@ -20,8 +20,9 @@ export class VideoService {
     uploaderId: string,
     videoTitle: string,
     videoBucketKey: string,
-  ): Promise<any> {
-    return this.videoModal.updateOne(
+    videoLocation: string,
+  ): Promise<Video> {
+    return this.videoModal.findOneAndUpdate(
       {
         uploaderId: uploaderId,
         editStatus: VideoEditStatus.processing,
@@ -30,10 +31,12 @@ export class VideoService {
         $set: {
           videoTitle: videoTitle,
           videoBucketKey: videoBucketKey,
+          videoLocation: `https://${videoLocation}`,
         },
       },
       {
         upsert: true,
+        new: true,
       },
     );
   }
