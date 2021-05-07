@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Video, VideoDocument } from '../../schemas/video.schema';
 import { VideoEditStatus } from '../../common/common.interface';
 import { Tag, TagDocument } from '../../schemas/tag.schema';
+import { VideoStatus } from '../../schemas/types/video';
 
 @Injectable()
 export class VideoService {
@@ -32,6 +33,7 @@ export class VideoService {
           videoTitle: videoTitle,
           videoBucketKey: videoBucketKey,
           videoLocation: `https://${videoLocation}`,
+          videoStatus: VideoStatus.forbidden,
         },
       },
       {

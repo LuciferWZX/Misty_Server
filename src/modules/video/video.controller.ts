@@ -91,6 +91,7 @@ export class VideoController {
         videoTags: video.videoTags,
         videoTitle: video.videoTitle,
         videoBucketKey: video.videoBucketKey,
+        videoLocation: video.videoLocation,
       };
     }
     return null;

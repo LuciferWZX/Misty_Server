@@ -9,4 +9,5 @@ export class VideoEntity {
   uploaderId?: string;
   editStatus: VideoEditStatus;
   videoBucketKey: string;
+  videoLocation: string;
 }

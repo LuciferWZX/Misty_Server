@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { VideoEditStatus } from '../common/common.interface';
+import { VideoStatus, VideoType } from './types/video';
 
 @Schema({
   collection: 'tb_video',
@@ -37,8 +38,22 @@ export class Video extends Document {
   videoBucketKey: string; //视频存入的腾讯存储桶的key
   @Prop({
     required: true,
+    default: VideoType.homemade,
   })
-  videoLocation: string;
+  videoType: VideoType; //视频的状态
+  @Prop({
+    required: true,
+    default: VideoStatus.forbidden,
+  })
+  videoStatus: VideoStatus; //视频的状态
+  @Prop({
+    required: true,
+  })
+  videoSubarea: [string, string] | []; //视频的分区
+  @Prop({
+    required: true,
+  })
+  videoLocation: string; //视频的地址
   @Prop({
     default: [],
     required: true,
