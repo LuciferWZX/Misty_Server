@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import orcClientConfig from 'src/config/ocr.config';
-import cosOption, { appId } from '../config/cos.config';
+import cosOption, { bucketName } from '../config/cos.config';
 import {
   BucketField,
   TenXunBucket,
@@ -129,38 +129,6 @@ export class CosService {
   }
 
   /**
-   * @todo 创建存储桶
-   * @param bucketName
-   * @param region
-   */
-  public async createBucket({
-    bucketName,
-    region = TenXunRegion.shangHai,
-  }: {
-    bucketName: string;
-    region?: TenXunRegion;
-  }): Promise<PutBucketResult | CosError> {
-    return new Promise((resolve, reject) => {
-      this.cosClient.putBucket(
-        {
-          Bucket: `${bucketName}-${appId}`,
-          Region: region,
-        },
-        function (err, data) {
-          if (data) {
-            Logger.log(`创建存储桶成功：${data}`);
-            resolve(data);
-          }
-          if (err) {
-            Logger.error(`创建存储桶出错：${err}`);
-            reject(err);
-          }
-        },
-      );
-    });
-  }
-
-  /**
    * @todo 上传视频
    * @param accountId
    * @param region
@@ -180,9 +148,9 @@ export class CosService {
     return new Promise((resolve, reject) => {
       this.cosClient.putObject(
         {
-          Bucket: `${accountId}-${appId}`,
+          Bucket: bucketName,
           Region: region,
-          Key: `${BucketField.video}${tenXunFileName}`,
+          Key: `${accountId}/${BucketField.video}${tenXunFileName}`,
           Body: bufferVideo,
           onProgress: function (progressData: UploadProgressType) {
             Logger.warn('视频上传的进度：' + progressData.percent);
@@ -220,9 +188,9 @@ export class CosService {
     return new Promise((resolve, reject) => {
       this.cosClient.deleteObject(
         {
-          Bucket: `${accountId}-${appId}`,
+          Bucket: bucketName,
           Region: region,
-          Key: videoBucketKey,
+          Key: `${accountId}/${videoBucketKey}`,
         },
         function (err, data) {
           if (data) {
